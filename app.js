@@ -406,6 +406,24 @@
   $("endUndoBtn").addEventListener("click", undoRound);
   $("newProductBtn").addEventListener("click", () => { state.game = null; show("setup"); });
 
+  /* ---------------- לוגו: חזרה לדף הבית ---------------- */
+  function goHome() {
+    $("homeConfirm").hidden = true;
+    state.game = null;
+    show("setup");
+  }
+  $("homeBtn").addEventListener("click", () => {
+    // באמצע משחק שכבר נמכרו בו פריטים, מבקשים אישור כדי לא למחוק בטעות
+    if (state.phase === "game" && state.game && state.game.history.length > 0) {
+      $("homeConfirm").hidden = false;
+      $("homeYes").focus();
+    } else {
+      goHome();
+    }
+  });
+  $("homeYes").addEventListener("click", goHome);
+  $("homeNo").addEventListener("click", () => { $("homeConfirm").hidden = true; });
+
   /* ---------------- boot ---------------- */
   show(state.game ? state.phase : "setup");
 })();

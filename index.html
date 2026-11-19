@@ -12,12 +12,17 @@
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">
+    <button class="brand" id="homeBtn" type="button" aria-label="משחק התקציב: חזרה לדף הבית">
       <span class="brand-tag" aria-hidden="true">₪</span>
       <span class="brand-name">משחק התקציב</span>
-    </div>
+    </button>
     <button class="ghost small" id="themeBtn" type="button" aria-label="החלפת מצב תצוגה">🌓</button>
   </header>
+  <div id="homeConfirm" class="home-confirm" hidden>
+    <span>לחזור לדף הבית? המשחק הנוכחי יימחק.</span>
+    <button class="primary small" id="homeYes" type="button">כן, לדף הבית</button>
+    <button class="ghost small" id="homeNo" type="button">המשך לשחק</button>
+  </div>
 
   <!-- ========== מסך פתיחה ========== -->
   <main id="setupScreen" class="screen">
