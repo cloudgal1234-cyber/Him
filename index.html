@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>משחק התקציב</title>
+  <meta name="description" content="משחק התקציב: פריט אחרי פריט, השופט מחליט מי קנה ובכמה.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Secular+One&family=Rubik:wght@400;500;700;900&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-tag" aria-hidden="true">₪</span>
+      <span class="brand-name">משחק התקציב</span>
+    </div>
+    <button class="ghost small" id="themeBtn" type="button" aria-label="החלפת מצב תצוגה">🌓</button>
+  </header>
+
+  <!-- ========== מסך פתיחה ========== -->
+  <main id="setupScreen" class="screen">
+    <section class="panel">
+      <h2 class="step"><span class="step-n">1</span> מי משחק?</h2>
+      <div class="same-budget">
+        <label for="allBudget">תקציב לכולם</label>
+        <div class="money-input">
+          <input id="allBudget" type="number" inputmode="numeric" min="0" step="1" value="100">
+          <span>₪</span>
+        </div>
+        <button class="ghost small" id="applyAllBudget" type="button">החל על כולם</button>
+      </div>
+      <ul id="playerRows" class="player-rows"></ul>
+      <button class="ghost" id="addPlayerBtn" type="button">+ הוסף שחקן</button>
+    </section>
+
+    <section class="panel">
+      <h2 class="step"><span class="step-n">2</span> מה בונים?</h2>
+      <div id="productChips" class="chips"></div>
+      <div class="custom-topic">
+        <label for="topicInput">או הקלידו נושא חופשי</label>
+        <div class="row">
+          <input id="topicInput" type="text" placeholder="למשל: ארוחת חג, להקת רוק, בית חלומות…">
+          <button class="secondary" id="topicBtn" type="button">צור רשימה</button>
+        </div>
+        <p id="topicHint" class="hint" hidden></p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="step"><span class="step-n">3</span> הפריטים שיעלו למכירה <span id="itemCount" class="count-pill">0</span></h2>
+      <p class="hint">אפשר למחוק, לשנות סדר ולהוסיף. הסדר כאן הוא סדר הסיבובים.</p>
+      <ol id="itemList" class="item-list"></ol>
+      <div class="row">
+        <input id="newItemInput" type="text" placeholder="פריט חדש…">
+        <button class="secondary" id="addItemBtn" type="button">הוסף</button>
+      </div>
+      <label class="check"><input type="checkbox" id="shuffleChk"> לערבב את הסדר בתחילת המשחק</label>
+    </section>
+
+    <div class="start-wrap">
+      <p id="setupError" class="error" hidden></p>
+      <button class="primary huge" id="startBtn" type="button">יאללה, מתחילים!</button>
+    </div>
+  </main>
+
+  <!-- ========== מסך המשחק ========== -->
+  <main id="gameScreen" class="screen" hidden>
+    <section id="scoreboard" class="scoreboard" aria-live="polite"></section>
+
+    <section class="stage">
+      <div class="round-meta">
+        <span id="productLabel" class="product-label"></span>
+        <span id="roundLabel" class="round-label"></span>
+      </div>
+      <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+
+      <div id="itemCard" class="item-card">
+        <div class="tag-hole" aria-hidden="true"></div>
+        <div id="itemEmoji" class="item-emoji" aria-hidden="true"></div>
+        <div id="itemName" class="item-name"></div>
+        <div id="nextUp" class="next-up"></div>
+      </div>
+    </section>
+
+    <section class="judge panel">
+      <h2 class="judge-title">השופט מחליט</h2>
+      <div class="judge-q">מי לקח?</div>
+      <div id="buyerButtons" class="buyer-buttons"></div>
+
+      <div class="judge-q">כמה שילם?</div>
+      <div class="price-row">
+        <div class="money-input big">
+          <input id="priceInput" type="number" inputmode="numeric" min="0" step="1" placeholder="0">
+          <span>₪</span>
+        </div>
+        <div class="quick" id="quickAdds">
+          <button type="button" data-add="1">+1</button>
+          <button type="button" data-add="5">+5</button>
+          <button type="button" data-add="10">+10</button>
+          <button type="button" data-add="50">+50</button>
+          <button type="button" data-add="0" class="clear">נקה</button>
+        </div>
+      </div>
+      <p id="judgeError" class="error" hidden></p>
+
+      <div class="judge-actions">
+        <button class="primary" id="confirmBtn" type="button">אשר ועבור לפריט הבא ←</button>
+        <button class="secondary" id="skipBtn" type="button">דלג · אף אחד לא לקח</button>
+      </div>
+
+      <div class="judge-tools">
+        <button class="ghost small" id="undoBtn" type="button">↶ חזור צעד אחורה</button>
+        <button class="ghost small" id="insertBtn" type="button">+ הוסף פריט עכשיו</button>
+        <button class="ghost small danger" id="endBtn" type="button">סיים משחק</button>
+      </div>
+
+      <div id="insertBox" class="insert-box" hidden>
+        <input id="insertInput" type="text" placeholder="שם הפריט שיעלה מיד אחרי זה">
+        <button class="secondary small" id="insertConfirm" type="button">הוסף כפריט הבא</button>
+      </div>
+
+      <div id="endConfirm" class="end-confirm" hidden>
+        <span>לסיים עכשיו? הפריטים שנשארו לא יימכרו.</span>
+        <button class="primary small" id="endYes" type="button">כן, לסיום</button>
+        <button class="ghost small" id="endNo" type="button">ביטול</button>
+      </div>
+
+      <details class="log">
+        <summary>היסטוריית סיבובים</summary>
+        <ol id="historyList"></ol>
+      </details>
+    </section>
+  </main>
+
+  <!-- ========== מסך סיום ========== -->
+  <main id="endScreen" class="screen" hidden>
+    <section class="end-hero">
+      <div class="end-kicker">סוף המכירה</div>
+      <h1 id="endTitle" class="end-title"></h1>
+      <p id="endSub" class="end-sub"></p>
+    </section>
+    <section id="results" class="results"></section>
+    <section id="skippedBox" class="panel skipped" hidden>
+      <h3>פריטים שלא נמכרו</h3>
+      <div id="skippedList" class="chips static"></div>
+    </section>
+    <div class="end-actions">
+      <button class="primary huge" id="replayBtn" type="button">סיבוב חדש (אותו תוצר)</button>
+      <button class="secondary" id="newProductBtn" type="button">תוצר חדש</button>
+      <button class="ghost small" id="endUndoBtn" type="button">↶ חזור לסיבוב האחרון</button>
+    </div>
+  </main>
+
+  <script src="items.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
